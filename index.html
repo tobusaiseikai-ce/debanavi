@@ -14,7 +14,7 @@
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/debanavi/sw.js');
+      navigator.serviceWorker.register('/device-map/sw.js');
     });
   }
 </script>
@@ -1320,6 +1320,103 @@ textarea.form-input { height: 72px; resize: vertical; font-size: 13px; line-heig
 select.finput { font-size: 14px; cursor: pointer; }
 textarea.finput { height: 60px; resize: none; font-size: 13px; line-height: 1.6; padding-top: 2px; }
 
+/* ===== PC用フロー管理 2カラムレイアウト ===== */
+@media (min-width: 768px) {
+  #flowLayer3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+    align-items: start;
+    height: calc(100vh - 120px);
+  }
+  #flowLayer3 > .admin-sub-header { grid-column: 1 / -1; }
+  #pc-flow-left {
+    grid-column: 1;
+    height: calc(100vh - 180px);
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  #pc-flow-right {
+    grid-column: 2;
+    height: calc(100vh - 180px);
+  }
+  .flow-preview-pc { height: 100%; display: flex; flex-direction: column; }
+  .flow-preview-pc-body { flex: 1; overflow-y: auto; }
+  /* アコーディオンヘッダーをクリッカブルに */
+  .pc-accordion-hdr { cursor: pointer; }
+  .pc-accordion-arrow { display: flex; align-items: center; transition: transform 0.2s; }
+  .pc-accordion-arrow.collapsed { transform: rotate(-90deg); }
+  #fe-icon-grid {
+    grid-template-columns: repeat(10, 1fr) !important;
+    gap: 4px !important;
+  }
+  #fe-icon-grid button { padding: 4px !important; }
+  /* モーダルをPC時はセンターダイアログに */
+  .modal-overlay { align-items: center; justify-content: center; padding: 20px; }
+  .modal-sheet {
+    border-radius: 16px !important;
+    max-width: 560px;
+    transform: scale(0.95) !important;
+    opacity: 0;
+    transition: transform 0.25s, opacity 0.25s !important;
+  }
+  .modal-overlay.open .modal-sheet { transform: scale(1) !important; opacity: 1; }
+  .modal-handle { display: none; }
+  /* PC時はステップ追加をインラインに切り替えるのでモーダルは非表示 */
+  #pcAddStepBtn { display: block; }
+}
+
+@media (max-width: 767px) {
+  .pc-accordion-hdr { cursor: default; pointer-events: none; }
+  .pc-accordion-arrow { display: none; }
+  #pc-step-editor { display: none !important; }
+  #pcAddStepBtn { display: none !important; }
+}
+
+/* ===== アコーディオン ===== */
+.pc-accordion-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0 8px; margin-bottom: 4px;
+}
+#pc-flow-info-body { transition: none; overflow: hidden; }
+#pc-flow-info-body.collapsed { display: none; }
+
+/* ===== PC用インラインステップエディタ ===== */
+.pc-step-editor-hdr {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; margin-bottom: 8px;
+  background: var(--surface2); border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.pc-step-cancel-btn {
+  margin-left: auto; background: none; border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 600;
+  color: var(--text-muted); cursor: pointer; font-family: 'Noto Sans JP', sans-serif;
+  transition: all 0.15s;
+}
+.pc-step-cancel-btn:hover { background: var(--red-dim); border-color: var(--red); color: var(--red); }
+
+/* ===== PC用プレビューパネル ===== */
+.flow-preview-pc { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.flow-preview-pc-hdr { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.flow-preview-pc-hdr::before { content: ''; display: block; width: 4px; height: 12px; border-radius: 2px; background: var(--green); }
+.flow-preview-pc-body { padding: 14px 16px; }
+.flow-preview-pc-empty { text-align: center; padding: 40px 0; font-size: 12px; color: var(--text-dim); }
+.fp-flow-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.fp-flow-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--green-dim); color: var(--green); flex-shrink: 0; }
+.fp-step { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+.fp-step.editing { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-dim); }
+.fp-step-hdr { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: var(--surface2); }
+.fp-step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.fp-step-title { font-size: 12px; font-weight: 700; color: var(--text); flex: 1; }
+.fp-step-body { padding: 7px 12px; display: flex; flex-direction: column; gap: 5px; }
+.fp-caution { font-size: 11px; color: var(--orange); background: var(--orange-dim); border-radius: 6px; padding: 4px 8px; font-weight: 600; }
+.fp-check-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); }
+.fp-check-item::before { content: ''; width: 12px; height: 12px; border-radius: 3px; border: 1.5px solid var(--border); flex-shrink: 0; }
+.fp-device-chip { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 20px; background: var(--accent-dim); color: var(--accent); font-size: 10px; font-weight: 700; margin: 1px; }
+.fp-branch { font-size: 11px; color: var(--purple); background: var(--purple-dim); border-radius: 6px; padding: 4px 8px; font-weight: 600; }
+.fp-editing-label { font-size: 10px; color: var(--accent); font-weight: 700; margin-left: auto; }
+
 /* 表示専用行（保管場所など） */
 .frow-display {
   padding: 11px 14px; border-bottom: 1px solid #f1f5f9;
@@ -2049,57 +2146,158 @@ textarea.finput { height: 60px; resize: none; font-size: 13px; line-height: 1.6;
       <!-- 層3: フロー編集 -->
       <div id="flowLayer3" style="display:none;">
         <div class="admin-sub-header">
-          <button class="admin-sub-back" onclick="showFlowLayer(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>戻る</button>
+          <button class="admin-sub-back" onclick="showFlowLayer(2);renderFlowListForProc();"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>戻る</button>
           <div class="admin-sub-title" id="flowLayer3Title">フロー編集</div>
         </div>
 
-        <!-- フロー基本情報 -->
-        <div class="form-sec-hdr">
-          <div class="form-sec-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 01-9 9"/></svg></div>
-          <div class="form-sec-label">フロー情報<small>基本的な設定</small></div>
-        </div>
-        <div class="form-block">
-          <div class="frow">
-            <div class="flabel">手技 <span class="req">必須</span></div>
-            <select class="finput" id="fe-procId"></select>
-          </div>
-          <div class="frow">
-            <div class="flabel">フロー名 <span class="req">必須</span></div>
-            <input type="text" class="finput" id="fe-name" placeholder="例：緊急PCI">
-          </div>
-        </div>
+        <!-- 左カラム：編集エリア -->
+        <div id="pc-flow-left">
 
-        <!-- アイコン選択 -->
-        <div class="form-sec-hdr">
-          <div class="form-sec-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
-          <div class="form-sec-label">アイコン<small>フローを識別するアイコン</small></div>
-        </div>
-        <div class="form-block">
-          <div class="frow">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-              <div id="fe-icon-preview" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--green-dim);color:var(--green);"></div>
-              <span style="font-size:12px;color:var(--text-muted);">下から選択してください</span>
+          <!-- フロー情報アコーディオン -->
+          <div id="pc-flow-info-accordion">
+            <!-- アコーディオンヘッダー（PC時のみ折り畳みボタン表示） -->
+            <div class="pc-accordion-hdr" id="pcAccordionHdr" onclick="pcToggleFlowInfo()">
+              <div class="form-sec-hdr" style="margin:0;padding:0;">
+                <div class="form-sec-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 01-9 9"/></svg></div>
+                <div class="form-sec-label">フロー情報<small>基本的な設定</small></div>
+              </div>
+              <div class="pc-accordion-arrow" id="pcAccordionArrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
             </div>
-            <div id="fe-icon-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;"></div>
-            <input type="hidden" id="fe-icon" value="branch">
+
+            <!-- アコーディオン本体 -->
+            <div id="pc-flow-info-body">
+              <div class="form-block">
+                <div class="frow">
+                  <div class="flabel">手技 <span class="req">必須</span></div>
+                  <select class="finput" id="fe-procId" oninput="renderFlowPreviewPC()"></select>
+                </div>
+                <div class="frow">
+                  <div class="flabel">フロー名 <span class="req">必須</span></div>
+                  <input type="text" class="finput" id="fe-name" placeholder="例：緊急PCI" oninput="renderFlowPreviewPC()">
+                </div>
+              </div>
+
+              <div class="form-sec-hdr">
+                <div class="form-sec-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+                <div class="form-sec-label">アイコン<small>フローを識別するアイコン</small></div>
+              </div>
+              <div class="form-block">
+                <div class="frow">
+                  <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+                    <div id="fe-icon-preview" style="width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--green-dim);color:var(--green);"></div>
+                    <span style="font-size:12px;color:var(--text-muted);">下から選択してください</span>
+                  </div>
+                  <div id="fe-icon-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;"></div>
+                  <input type="hidden" id="fe-icon" value="branch">
+                </div>
+              </div>
+            </div>
+          </div><!-- /accordion -->
+
+          <input type="hidden" id="fe-editId">
+
+          <!-- PC用インラインステップエディタ（PC時のみ表示） -->
+          <div id="pc-step-editor" style="display:none;">
+            <div class="pc-step-editor-hdr">
+              <div class="form-sec-icon orange" style="width:26px;height:26px;border-radius:7px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+              <span class="form-sec-label" id="pcStepEditorTitle" style="margin:0;">ステップを追加</span>
+              <button class="pc-step-cancel-btn" onclick="pcCloseStepEditor()">✕ キャンセル</button>
+            </div>
+
+            <!-- ステップタイトル・注意点 -->
+            <div class="form-block" style="margin-bottom:8px;">
+              <div class="frow">
+                <div class="flabel">ステップタイトル <span class="req">必須</span></div>
+                <input type="text" class="finput" id="pc-se-title" placeholder="例：IVUS / OCT施行" oninput="renderFlowPreviewPC()">
+              </div>
+              <div class="frow">
+                <div class="flabel">注意点（任意）</div>
+                <textarea class="finput" id="pc-se-caution" placeholder="例：pull-backはゆっくり行うこと" style="height:56px;resize:none;font-size:13px;line-height:1.6;padding-top:2px;" oninput="renderFlowPreviewPC()"></textarea>
+              </div>
+            </div>
+
+            <!-- チェックリスト -->
+            <div class="form-sec-hdr" style="padding-top:8px;">
+              <div class="form-sec-icon blue" style="width:26px;height:26px;border-radius:7px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><polyline points="3 6 4 7 6 5"/><polyline points="3 12 4 13 6 11"/><polyline points="3 18 4 19 6 17"/></svg></div>
+              <div class="form-sec-label" style="margin:0;">チェックリスト<small>確認項目を追加</small></div>
+              <button class="small-btn" onclick="pcSeAddChecklist()" style="margin-left:auto;">＋追加</button>
+            </div>
+            <div id="pc-se-checklist-items" style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px;"></div>
+            <div class="form-block" style="margin-bottom:8px;">
+              <div class="frow" style="flex-direction:row;align-items:center;gap:10px;">
+                <input type="checkbox" id="pc-se-checkRequired" style="width:16px;height:16px;flex-shrink:0;" onchange="renderFlowPreviewPC()">
+                <label for="pc-se-checkRequired" class="flabel" style="cursor:pointer;">全チェックを次へ進む条件にする</label>
+              </div>
+            </div>
+
+            <!-- 関連デバイス -->
+            <div class="form-sec-hdr" style="padding-top:4px;">
+              <div class="form-sec-icon green" style="width:26px;height:26px;border-radius:7px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+              <div class="form-sec-label" style="margin:0;">関連デバイス<small>使用するデバイスを選択</small></div>
+              <button class="small-btn" onclick="pcSeOpenDevicePicker()" style="margin-left:auto;">＋選択</button>
+            </div>
+            <div class="form-block" style="margin-bottom:8px;">
+              <div class="frow">
+                <div id="pc-se-device-chips" style="display:flex;flex-wrap:wrap;gap:6px;min-height:24px;"></div>
+              </div>
+            </div>
+
+            <!-- 分岐設定 -->
+            <div class="form-sec-hdr" style="padding-top:4px;">
+              <div class="form-sec-icon" style="width:26px;height:26px;border-radius:7px;background:var(--purple-dim);color:var(--purple);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 01-9 9"/></svg></div>
+              <div class="form-sec-label" style="margin:0;">分岐設定<small>所見・判断で分岐させる</small></div>
+              <button class="small-btn" onclick="pcSeToggleBranch()" id="pc-se-branch-toggle-btn" style="margin-left:auto;">＋追加</button>
+            </div>
+            <div id="pc-se-branch-section" style="display:none;">
+              <div class="form-block" style="margin-bottom:8px;">
+                <div class="frow">
+                  <div class="flabel">質問文</div>
+                  <input type="text" class="finput" id="pc-se-branch-question" placeholder="例：IVUS所見は？" oninput="renderFlowPreviewPC()">
+                </div>
+              </div>
+              <div id="pc-se-branch-options" class="drag-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+              <button class="action-btn secondary" onclick="pcSeAddBranchOption()" style="width:100%;margin-top:6px;margin-bottom:4px;padding:9px;font-size:12px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                選択肢を追加
+              </button>
+            </div>
+
+            <input type="hidden" id="pc-se-editStepId">
+            <button class="action-btn primary" onclick="pcSaveStep()" style="width:100%;margin-top:12px;margin-bottom:6px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              ステップを保存
+            </button>
+          </div><!-- /pc-step-editor -->
+
+          <!-- ステップ一覧 -->
+          <div class="form-sec-hdr" style="padding-top:12px;">
+            <div class="form-sec-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+            <div class="form-sec-label">ステップ<small>長押しで並び替え</small></div>
+          </div>
+          <div id="flowStepAdminList" class="drag-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
+          <button class="action-btn secondary" id="pcAddStepBtn" onclick="pcOpenStepEditor(null)" style="width:100%;margin-bottom:12px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            ステップを追加
+          </button>
+
+          <!-- フロー情報を保存（一番下） -->
+          <button class="action-btn secondary" onclick="saveFlowBasic()" style="width:100%;margin-bottom:20px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            フロー情報を保存
+          </button>
+        </div>
+
+        <!-- 右カラム：リアルタイムプレビュー（PC時のみ表示） -->
+        <div id="pc-flow-right" style="display:none;">
+          <div class="flow-preview-pc">
+            <div class="flow-preview-pc-hdr">プレビュー</div>
+            <div class="flow-preview-pc-body" id="flowPreviewPCBody">
+              <div class="flow-preview-pc-empty">フロー情報を入力すると<br>ここにプレビューが表示されます</div>
+            </div>
           </div>
         </div>
-        <input type="hidden" id="fe-editId">
-        <button class="action-btn primary" onclick="saveFlowBasic()" style="width:100%;margin-bottom:16px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          フロー情報を保存
-        </button>
-
-        <!-- ステップ一覧 -->
-        <div class="form-sec-hdr">
-          <div class="form-sec-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
-          <div class="form-sec-label">ステップ<small>長押しで並び替え</small></div>
-        </div>
-        <div id="flowStepAdminList" class="drag-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
-        <button class="action-btn secondary" onclick="openStepEditModal(null,null)" style="width:100%;margin-bottom:20px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          ステップを追加
-        </button>
       </div>
 
     </div>
@@ -4248,6 +4446,7 @@ function showFlowLayer(n) {
   document.getElementById('flowLayer1').style.display = n === 1 ? '' : 'none';
   document.getElementById('flowLayer2').style.display = n === 2 ? '' : 'none';
   document.getElementById('flowLayer3').style.display = n === 3 ? '' : 'none';
+  if (n === 3) applyFlowPCLayout();
 }
 
 function initFlowAdmin() {
@@ -4412,6 +4611,8 @@ function saveFlowBasic() {
   saveFlows(flows);
   document.getElementById('flowLayer3Title').textContent = name;
   renderFlowStepAdminList();
+  renderFlowListForProc();
+  renderFlowPreviewPC();
   showToast('保存しました');
 }
 
@@ -4447,7 +4648,7 @@ function renderFlowStepAdminList() {
           <div class="flow-step-admin-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(s.title)}</div>
           <div class="flow-step-admin-badges" style="margin-top:3px;">${badges}</div>
         </div>
-        <button class="small-btn" onclick="openStepEditModal('${escHtml(flow.id)}','${escHtml(s.id)}')">編集</button>
+        <button class="small-btn" onclick="pcOpenStepEditor('${escHtml(s.id)}')">編集</button>
         <button class="small-btn danger" onclick="deleteStep('${escHtml(flow.id)}','${escHtml(s.id)}')">削除</button>
       </div>`;
   }).join('');
@@ -4462,6 +4663,7 @@ function renderFlowStepAdminList() {
     saveFlows(flows);
     renderFlowStepAdminList();
   });
+  renderFlowPreviewPC();
 }
 
 // ===== ステップ編集モーダル =====
@@ -4606,6 +4808,8 @@ function renderDevicePicker() {
   let selectedIds = [];
   if (_devicePickerTarget === 'step') {
     selectedIds = _seDeviceIds;
+  } else if (_devicePickerTarget === 'pc-step') {
+    selectedIds = _pcSeDeviceIds;
   } else if (_devicePickerTarget) {
     try { selectedIds = JSON.parse(document.getElementById(_devicePickerTarget + '_device_ids')?.value || '[]'); } catch(e) {}
   }
@@ -4627,6 +4831,11 @@ function toggleDevicePick(deviceId, deviceName) {
     if (_seDeviceIds.includes(deviceId)) _seDeviceIds = _seDeviceIds.filter(id => id !== deviceId);
     else _seDeviceIds.push(deviceId);
     renderSeDeviceChips(getDevices().filter(d => _seDeviceIds.includes(d.id)));
+  } else if (_devicePickerTarget === 'pc-step') {
+    if (_pcSeDeviceIds.includes(deviceId)) _pcSeDeviceIds = _pcSeDeviceIds.filter(id => id !== deviceId);
+    else _pcSeDeviceIds.push(deviceId);
+    pcSeRenderDeviceChips(getDevices().filter(d => _pcSeDeviceIds.includes(d.id)));
+    renderFlowPreviewPC();
   } else if (_devicePickerTarget) {
     const hidEl = document.getElementById(_devicePickerTarget + '_device_ids');
     let ids = [];
@@ -4711,6 +4920,7 @@ function saveStep() {
   saveFlows(flows);
   closeModal('modalStepEdit');
   renderFlowStepAdminList();
+  renderFlowPreviewPC();
   showToast(stepId ? 'ステップを更新しました' : 'ステップを追加しました');
 }
 
@@ -8310,6 +8520,405 @@ function exportMapHtml() {
   a.click(); URL.revokeObjectURL(url);
   showToast('HTMLをダウンロードしました');
 }
+
+// ===== PC用フロー管理 =====
+function isPCLayout() { return window.innerWidth >= 768; }
+
+function applyFlowPCLayout() {
+  const right = document.getElementById('pc-flow-right');
+  if (!right) return;
+  if (isPCLayout()) {
+    right.style.display = '';
+    renderFlowPreviewPC();
+  } else {
+    right.style.display = 'none';
+  }
+}
+
+window.addEventListener('resize', () => {
+  const layer3 = document.getElementById('flowLayer3');
+  if (layer3 && layer3.style.display !== 'none') applyFlowPCLayout();
+});
+
+// ===== アコーディオン =====
+let _pcFlowInfoCollapsed = false;
+
+function pcToggleFlowInfo() {
+  if (!isPCLayout()) return;
+  _pcFlowInfoCollapsed = !_pcFlowInfoCollapsed;
+  const body  = document.getElementById('pc-flow-info-body');
+  const arrow = document.getElementById('pcAccordionArrow');
+  if (body)  body.classList.toggle('collapsed', _pcFlowInfoCollapsed);
+  if (arrow) arrow.classList.toggle('collapsed', _pcFlowInfoCollapsed);
+}
+
+function pcCollapseFlowInfo() {
+  if (!isPCLayout()) return;
+  _pcFlowInfoCollapsed = true;
+  const body  = document.getElementById('pc-flow-info-body');
+  const arrow = document.getElementById('pcAccordionArrow');
+  if (body)  body.classList.add('collapsed');
+  if (arrow) arrow.classList.add('collapsed');
+}
+
+function pcExpandFlowInfo() {
+  _pcFlowInfoCollapsed = false;
+  const body  = document.getElementById('pc-flow-info-body');
+  const arrow = document.getElementById('pcAccordionArrow');
+  if (body)  body.classList.remove('collapsed');
+  if (arrow) arrow.classList.remove('collapsed');
+}
+
+// ===== PC用インラインステップエディタ =====
+let _pcSeDeviceIds = [];
+let _pcSeBranchCount = 0;
+let _pcSeEditingStepId = null;
+
+function pcOpenStepEditor(stepId) {
+  if (!isPCLayout()) {
+    // iPhoneはモーダルへ
+    openStepEditModal(null, stepId);
+    return;
+  }
+  _pcSeDeviceIds = [];
+  _pcSeBranchCount = 0;
+  _pcSeEditingStepId = stepId || null;
+
+  const editor = document.getElementById('pc-step-editor');
+  const title  = document.getElementById('pcStepEditorTitle');
+  if (!editor) return;
+
+  // フォームリセット
+  document.getElementById('pc-se-title').value = '';
+  document.getElementById('pc-se-caution').value = '';
+  document.getElementById('pc-se-checkRequired').checked = false;
+  document.getElementById('pc-se-checklist-items').innerHTML = '';
+  document.getElementById('pc-se-device-chips').innerHTML = '';
+  document.getElementById('pc-se-branch-section').style.display = 'none';
+  document.getElementById('pc-se-branch-toggle-btn').textContent = '＋追加';
+  document.getElementById('pc-se-branch-options').innerHTML = '';
+  document.getElementById('pc-se-branch-question').value = '';
+  _pcSeBranchCount = 0;
+
+  if (stepId) {
+    const flow = getFlows().find(f => f.id === _flowAdminFlowId);
+    const step = flow ? flow.steps.find(s => s.id === stepId) : null;
+    if (!step) return;
+    title.textContent = 'ステップを編集';
+    document.getElementById('pc-se-title').value    = step.title   || '';
+    document.getElementById('pc-se-caution').value  = step.caution || '';
+    document.getElementById('pc-se-checkRequired').checked = !!step.checkRequired;
+    (step.checklist || []).forEach(item => pcSeAddChecklist(item));
+    _pcSeDeviceIds = (step.devices || []).map(d => d.id).filter(Boolean);
+    pcSeRenderDeviceChips(step.devices || []);
+    if (step.branch) {
+      document.getElementById('pc-se-branch-section').style.display = 'block';
+      document.getElementById('pc-se-branch-toggle-btn').textContent = '－削除';
+      document.getElementById('pc-se-branch-question').value = step.branch.question || '';
+      step.branch.options.forEach(opt => pcSeAddBranchOption(opt));
+    }
+  } else {
+    title.textContent = 'ステップを追加';
+  }
+
+  editor.style.display = 'block';
+  pcCollapseFlowInfo();
+
+  // 左ペインを一番上にスクロール
+  const left = document.getElementById('pc-flow-left');
+  if (left) left.scrollTop = 0;
+
+  renderFlowPreviewPC();
+}
+
+function pcCloseStepEditor() {
+  const editor = document.getElementById('pc-step-editor');
+  if (editor) editor.style.display = 'none';
+  _pcSeEditingStepId = null;
+  pcExpandFlowInfo();
+  renderFlowPreviewPC();
+}
+
+function pcSaveStep() {
+  const title = document.getElementById('pc-se-title').value.trim();
+  if (!title) { showToast('ステップタイトルは必須です'); return; }
+
+  const caution       = document.getElementById('pc-se-caution').value.trim() || null;
+  const checkRequired = document.getElementById('pc-se-checkRequired').checked;
+  const checklistInputs = document.querySelectorAll('#pc-se-checklist-items .finput');
+  const checklist     = [...checklistInputs].map(i => i.value.trim()).filter(Boolean);
+
+  const allDevices = getDevices();
+  const devices    = _pcSeDeviceIds.map(id => {
+    const d = allDevices.find(x => x.id === id);
+    return d ? { id: d.id, name: d.name } : null;
+  }).filter(Boolean);
+
+  let branch = null;
+  const branchSec = document.getElementById('pc-se-branch-section');
+  if (branchSec && branchSec.style.display !== 'none') {
+    const question = document.getElementById('pc-se-branch-question').value.trim();
+    const optEls   = document.querySelectorAll('#pc-se-branch-options .pc-branch-opt');
+    const options  = [...optEls].map((el, idx) => {
+      const labelEl = el.querySelector('input[id$="_label"]');
+      const label   = labelEl?.value.trim() || `選択肢${idx + 1}`;
+      const rec   = el.querySelector('input[id$="_rec"]')?.value.trim()      || '';
+      const caut  = el.querySelector('input[id$="_caution"]')?.value.trim()  || null;
+      const clRaw = el.querySelector('textarea[id$="_checklist"]')?.value     || '';
+      const cl    = clRaw.split('\n').map(s => s.trim()).filter(Boolean);
+      let devIds  = [];
+      try { devIds = JSON.parse(el.querySelector('input[id$="_device_ids"]')?.value || '[]'); } catch(e) {}
+      const devs  = devIds.map(did => { const d = allDevices.find(x => x.id === did); return d ? { id: d.id, name: d.name } : null; }).filter(Boolean);
+      return { label, result: { recommendation: rec, caution: caut !== '' ? caut : null, checklist: cl, devices: devs } };
+    });
+    if (question || options.length) branch = { question, options };
+  }
+
+  const flows = getFlows();
+  const flow  = flows.find(f => f.id === _flowAdminFlowId);
+  if (!flow) {
+    showToast('先にフロー情報を保存してください');
+    pcExpandFlowInfo();
+    return;
+  }
+
+  const stepId = _pcSeEditingStepId;
+  if (stepId) {
+    const s = flow.steps.find(s => s.id === stepId);
+    if (s) { s.title = title; s.caution = caution; s.checkRequired = checkRequired; s.checklist = checklist; s.devices = devices; s.branch = branch; }
+  } else {
+    flow.steps.push({ id: 'step_' + Date.now(), title, caution, checkRequired, checklist, devices, branch });
+  }
+  saveFlows(flows);
+
+  // UIリセット（保存完了後）
+  const editor = document.getElementById('pc-step-editor');
+  if (editor) editor.style.display = 'none';
+  _pcSeEditingStepId = null;
+  pcExpandFlowInfo();
+
+  renderFlowStepAdminList();
+  renderFlowListForProc();
+  renderFlowPreviewPC();
+  showToast(stepId ? 'ステップを更新しました' : 'ステップを追加しました');
+}
+
+// チェックリスト追加（PC用）
+function pcSeAddChecklist(value) {
+  const container = document.getElementById('pc-se-checklist-items');
+  const div = document.createElement('div');
+  div.className = 'form-block';
+  div.style.cssText = 'margin-bottom:4px;';
+  div.innerHTML = `
+    <div class="frow" style="flex-direction:row;align-items:center;gap:8px;">
+      <input type="text" class="finput" value="${escHtml(value||'')}" placeholder="確認項目を入力" oninput="renderFlowPreviewPC()" style="flex:1;">
+      <button onclick="this.closest('.form-block').remove();renderFlowPreviewPC();" style="background:none;border:none;color:var(--text-dim);cursor:pointer;padding:4px;font-size:16px;line-height:1;">✕</button>
+    </div>`;
+  container.appendChild(div);
+  renderFlowPreviewPC();
+}
+
+// デバイスチップ表示（PC用）
+function pcSeRenderDeviceChips(devices) {
+  const container = document.getElementById('pc-se-device-chips');
+  if (!container) return;
+  container.innerHTML = devices.map(d => `
+    <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:20px;background:var(--accent-dim);color:var(--accent);font-size:11px;font-weight:700;">
+      ${escHtml(d.name)}
+      <button onclick="pcSeRemoveDevice('${escHtml(d.id)}')" style="background:none;border:none;color:var(--accent);cursor:pointer;padding:0;font-size:13px;line-height:1;">✕</button>
+    </span>`).join('');
+}
+
+function pcSeRemoveDevice(id) {
+  _pcSeDeviceIds = _pcSeDeviceIds.filter(x => x !== id);
+  const allDevices = getDevices();
+  pcSeRenderDeviceChips(allDevices.filter(d => _pcSeDeviceIds.includes(d.id)));
+  renderFlowPreviewPC();
+}
+
+function pcSeOpenDevicePicker() {
+  _devicePickerTarget = 'pc-step';
+  renderDevicePicker();
+  openModal('modalDevicePicker');
+}
+let _pcSePickerMode = false;
+
+// 分岐設定（PC用）
+function pcSeToggleBranch() {
+  const sec = document.getElementById('pc-se-branch-section');
+  const btn = document.getElementById('pc-se-branch-toggle-btn');
+  if (!sec) return;
+  const isOpen = sec.style.display !== 'none';
+  sec.style.display = isOpen ? 'none' : 'block';
+  btn.textContent = isOpen ? '＋追加' : '－削除';
+  renderFlowPreviewPC();
+}
+
+// 分岐選択肢のナンバリング更新
+function pcSeRenumberBranch() {
+  const opts = document.querySelectorAll('#pc-se-branch-options .pc-branch-opt');
+  opts.forEach((el, i) => {
+    const numEl = el.querySelector('.pc-branch-num');
+    if (numEl) numEl.textContent = i + 1;
+  });
+  renderFlowPreviewPC();
+}
+
+// 分岐選択肢アコーディオン開閉
+function pcSeToggleBranchOpt(id) {
+  const body = document.getElementById(id + '_body');
+  const arrow = document.getElementById(id + '_arrow');
+  if (!body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  if (arrow) arrow.style.transform = isOpen ? 'rotate(-90deg)' : 'rotate(0deg)';
+}
+
+function pcSeAddBranchOption(opt) {
+  const id = 'pc_se_branch_' + (++_pcSeBranchCount);
+  const container = document.getElementById('pc-se-branch-options');
+  const label = opt?.label || '';
+  const div = document.createElement('div');
+  div.className = 'drag-item pc-branch-opt';
+  div.id = id;
+  div.dataset.id = id;
+  div.style.cssText = 'border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--surface);';
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface2);cursor:pointer;" onclick="pcSeToggleBranchOpt('${id}')">
+      <span class="drag-handle" style="color:var(--text-dim);cursor:grab;padding:2px;touch-action:none;" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="18" x2="16" y2="18"/></svg>
+      </span>
+      <div style="width:20px;height:20px;border-radius:50%;background:var(--purple);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;" class="pc-branch-num">1</div>
+      <input type="text" class="finput" id="${id}_label" value="${escHtml(label)}" placeholder="選択肢ラベル（例：石灰化病変）" oninput="renderFlowPreviewPC();event.stopPropagation();" onclick="event.stopPropagation();" style="flex:1;font-weight:700;font-size:13px;">
+      <svg id="${id}_arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13" style="flex-shrink:0;transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div id="${id}_body" style="padding:10px 12px;display:block;border-top:1px solid var(--border2);">
+      <div class="frow" style="padding:6px 0;">
+        <div class="flabel">推奨アクション</div>
+        <input type="text" class="finput" id="${id}_rec" value="${escHtml(opt?.result?.recommendation||'')}" placeholder="例：PCI施行" oninput="renderFlowPreviewPC()">
+      </div>
+      <div class="frow" style="padding:6px 0;">
+        <div class="flabel">注意点</div>
+        <input type="text" class="finput" id="${id}_caution" value="${escHtml(opt?.result?.caution||'')}" placeholder="例：造影剤量に注意" oninput="renderFlowPreviewPC()">
+      </div>
+      <div class="frow" style="padding:6px 0;border-bottom:none;">
+        <div class="flabel">確認項目（1行1項目）</div>
+        <textarea class="finput" id="${id}_checklist" style="height:48px;resize:none;font-size:12px;" oninput="renderFlowPreviewPC()">${escHtml((opt?.result?.checklist||[]).join('\n'))}</textarea>
+      </div>
+      <input type="hidden" id="${id}_device_ids" value="[]">
+      <button onclick="document.getElementById('${id}').remove();pcSeRenumberBranch();" class="action-btn secondary" style="width:100%;margin-top:8px;padding:6px;font-size:11px;">この選択肢を削除</button>
+    </div>
+  `;
+  container.appendChild(div);
+  pcSeRenumberBranch();
+
+  // ドラッグソート初期化
+  container._dragInited = false;
+  initDragSort(container, () => { pcSeRenumberBranch(); });
+}
+
+// ===== PC用リアルタイムプレビュー =====
+function renderFlowPreviewPC() {
+  if (!isPCLayout()) return;
+  const body = document.getElementById('flowPreviewPCBody');
+  if (!body) return;
+
+  const name   = (document.getElementById('fe-name')?.value || '').trim();
+  const icon   = document.getElementById('fe-icon')?.value || 'branch';
+  const flowId = document.getElementById('fe-editId')?.value || _flowAdminFlowId;
+  const flow   = flowId ? getFlows().find(f => f.id === flowId) : null;
+  const steps  = flow ? [...flow.steps] : [];
+
+  // 編集中ステップをプレビューに仮反映
+  const editor = document.getElementById('pc-step-editor');
+  const editingTitle = document.getElementById('pc-se-title')?.value.trim();
+  if (editor && editor.style.display !== 'none' && editingTitle) {
+    const caution = document.getElementById('pc-se-caution')?.value.trim() || null;
+    const checklistInputs = document.querySelectorAll('#pc-se-checklist-items .finput');
+    const checklist = [...checklistInputs].map(i => i.value.trim()).filter(Boolean);
+    const allDevices = getDevices();
+    const devices = _pcSeDeviceIds.map(id => { const d = allDevices.find(x => x.id === id); return d ? { id: d.id, name: d.name } : null; }).filter(Boolean);
+    const branchSec = document.getElementById('pc-se-branch-section');
+    let branch = null;
+    if (branchSec && branchSec.style.display !== 'none') {
+      const question = document.getElementById('pc-se-branch-question')?.value.trim();
+      // 入力中の選択肢をリアルタイムで読む
+      const optEls = document.querySelectorAll('#pc-se-branch-options .pc-branch-opt');
+      const options = [...optEls].map((el, idx) => {
+        const label = el.querySelector('input[id$="_label"]')?.value.trim()     || `選択肢${idx + 1}`;
+        const rec   = el.querySelector('input[id$="_rec"]')?.value.trim()       || '';
+        const caut  = el.querySelector('input[id$="_caution"]')?.value.trim()   || null;
+        const clRaw = el.querySelector('textarea[id$="_checklist"]')?.value      || '';
+        const cl    = clRaw.split('\n').map(s => s.trim()).filter(Boolean);
+        return { label, result: { recommendation: rec, caution: caut !== '' ? caut : null, checklist: cl, devices: [] } };
+      });
+      if (question || options.length) branch = { question, options };
+    }
+    const tempStep = { id: _pcSeEditingStepId || '__new__', title: editingTitle, caution, checklist, devices, branch };
+    if (_pcSeEditingStepId) {
+      const idx = steps.findIndex(s => s.id === _pcSeEditingStepId);
+      if (idx !== -1) steps[idx] = tempStep;
+    } else {
+      steps.push(tempStep);
+    }
+  }
+
+  if (!name && steps.length === 0) {
+    body.innerHTML = '<div class="flow-preview-pc-empty">フロー情報を入力すると<br>ここにプレビューが表示されます</div>';
+    return;
+  }
+
+  const iconSvg = (PROC_ICON_LIST[icon] || PROC_ICON_LIST.branch || PROC_ICON_LIST.plus)
+    .replace('stroke-width="2"', 'stroke-width="2" width="16" height="16"');
+
+  let html = `<div class="fp-flow-title"><div class="fp-flow-icon">${iconSvg}</div><span>${escHtml(name || '（フロー名未入力）')}</span></div>`;
+
+  if (steps.length === 0) {
+    html += '<div style="font-size:12px;color:var(--text-dim);padding:8px 0;">ステップがまだありません</div>';
+  } else {
+    const editingId = _pcSeEditingStepId || (editor && editor.style.display !== 'none' && !_pcSeEditingStepId ? '__new__' : null);
+    steps.forEach((s, i) => {
+      const isEditing = s.id === editingId;
+      let bodyHtml = '';
+      if (s.caution) bodyHtml += `<div class="fp-caution">⚠ ${escHtml(s.caution)}</div>`;
+      (s.checklist || []).forEach(c => { bodyHtml += `<div class="fp-check-item">${escHtml(c)}</div>`; });
+      if (s.devices && s.devices.length) {
+        bodyHtml += '<div style="display:flex;flex-wrap:wrap;margin-top:2px;">';
+        s.devices.forEach(d => { bodyHtml += `<span class="fp-device-chip">${escHtml(d.name)}</span>`; });
+        bodyHtml += '</div>';
+      }
+      if (s.branch && (s.branch.question || s.branch.options?.length)) {
+        let branchHtml = `<div class="fp-branch">分岐${s.branch.question ? ': ' + escHtml(s.branch.question) : ''}`;
+        if (s.branch.options && s.branch.options.length) {
+          branchHtml += '<div style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">';
+          s.branch.options.forEach(opt => {
+            branchHtml += `<div style="border:1px solid var(--purple-dim);border-radius:6px;padding:5px 8px;">`;
+            branchHtml += `<div style="font-size:10px;font-weight:800;color:var(--purple);margin-bottom:2px;">▶ ${escHtml(opt.label)}</div>`;
+            if (opt.result?.recommendation) branchHtml += `<div style="font-size:10px;color:var(--text-muted);">推奨: ${escHtml(opt.result.recommendation)}</div>`;
+            if (opt.result?.caution) branchHtml += `<div style="font-size:10px;color:var(--orange);">⚠ ${escHtml(opt.result.caution)}</div>`;
+            (opt.result?.checklist || []).forEach(c => { branchHtml += `<div style="font-size:10px;color:var(--text-dim);">☐ ${escHtml(c)}</div>`; });
+            branchHtml += `</div>`;
+          });
+          branchHtml += '</div>';
+        }
+        branchHtml += '</div>';
+        bodyHtml += branchHtml;
+      }
+      html += `<div class="fp-step${isEditing ? ' editing' : ''}">
+        <div class="fp-step-hdr">
+          <div class="fp-step-num">${i + 1}</div>
+          <div class="fp-step-title">${escHtml(s.title)}</div>
+          ${isEditing ? '<span class="fp-editing-label">編集中</span>' : ''}
+        </div>
+        ${bodyHtml ? `<div class="fp-step-body">${bodyHtml}</div>` : ''}
+      </div>`;
+    });
+  }
+  body.innerHTML = html;
+}
+
+// ステップ一覧の編集ボタンをPC対応に
+const _origRenderFlowStepAdminListPC = renderFlowStepAdminList;
 
 // 埋め込みデータがあれば読み込む
 /* ED_EMBEDDED_DATA_PLACEHOLDER */
