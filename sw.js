@@ -1,10 +1,10 @@
-// GitHub Pages: https://tobusaiseikai-ce.github.io/device-map/
+// GitHub Pages: https://tobusaiseikai-ce.github.io/debanavi/
 const CACHE_NAME = 'dokodeba-v2';
 const ASSETS = [
-  '/device-map/',
-  '/device-map/index.html',
-  '/device-map/icon.svg',
-  '/device-map/manifest.json'
+  '/debanavi/',
+  '/debanavi/index.html',
+  '/debanavi/icon.svg',
+  '/debanavi/manifest.json'
 ];
 
 self.addEventListener('install', e => {
