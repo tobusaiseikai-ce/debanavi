@@ -1,0 +1,19 @@
+{
+  "name": "デバナビ",
+  "short_name": "デバナビ",
+  "description": "カテ室デバイスロケーター",
+  "start_url": "/device-map/",
+  "scope": "/device-map/",
+  "display": "standalone",
+  "background_color": "#f0f4f8",
+  "theme_color": "#2563eb",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
